@@ -18,77 +18,75 @@ def main():
         print('string required')
         raise SystemExit
 
-    rainbow_text = generate_rainbow(phrase, args)
+    rb = Rainbow(args.colors, args.start_color, args.end_color, args.format)
+    rainbow_text = rb.generate(phrase)
 
     print(rainbow_text)
 
 
-def generate_rainbow(phrase, args):
+class Rainbow(object):
+    """A rainbow object that can be applied to a string"""
 
-    if not phrase:
-        return False
+    def __init__(self, color_count, start_color, end_color, output_format):
 
-    conf = parse_config('config.ini')
+        conf = parse_config('config.ini')
 
-    opts = {}
+        self.color_count = int(conf['color_count'])
+        self.start_color = conf['start_color']
+        self.end_color = conf['end_color']
+        self.output_format = conf['format']
 
-    if args.colors:
-        opts['color_count'] = int(args.colors)
-    else:
-        opts['color_count'] = int(conf['color_count'])
+        if color_count:
+            self.color_count = int(color_count)
 
-    if args.start_color:
-        opts['start_color'] = args.start_color
-    else:
-        opts['start_color'] = conf['start_color']
+        if start_color:
+            self.start_color = start_color
 
-    if args.end_color:
-        opts['end_color'] = args.end_color
-    else:
-        opts['end_color'] = conf['end_color']
+        if end_color:
+            self.end_color = end_color
 
-    if args.format:
-        opts['output_format'] = args.format
-    else:
-        opts['output_format'] = conf['format']
+        if output_format:
+            self.output_format = output_format
 
-    with open(conf['formats_file']) as f:
-        opts['formats'] = json.loads(f.read())
+        with open(conf['formats_file']) as f:
+            self.formats = json.loads(f.read())
 
-    if opts['output_format'] in opts['formats']:
-        template = opts['formats'][opts['output_format']]
-    else:
-        print('format not found! Are you sure it exists in ' + conf['formats_file'] + '?')
-        raise SystemExit
+        if self.output_format in self.formats:
+            self.template = self.formats[self.output_format]
+        else:
+            raise RuntimeError('format not found! Are you sure it exists in ' + conf['formats_file'] + '?')
 
-    phrase_length = len(phrase)
 
-    # chars per color
-    cpc = ceil(phrase_length / opts['color_count'])
+    def generate(self, phrase):
+    
+        phrase_length = len(phrase)
 
-    color_start = Color(opts['start_color'])
-    color_end = Color(opts['end_color'])
-    rainbow = list(color_start.range_to(color_end, opts['color_count']))
+        # chars per color
+        cpc = ceil(phrase_length / self.color_count)
 
-    characters = list(phrase)
-    characters.reverse()
+        color_start = Color(self.start_color)
+        color_end = Color(self.end_color)
+        rainbow = list(color_start.range_to(color_end, self.color_count))
 
-    s = ''
-    for color in rainbow:
-        s += template['tag_open_before'] + color.hex + template['tag_open_after']
+        characters = list(phrase)
+        characters.reverse()
 
-        i = 0
-        while i < cpc and len(characters) > 0:
-            next_char = characters.pop()
-            s += next_char
-            i += 1
+        s = ''
+        for color in rainbow:
+            s += self.template['tag_open_before'] + color.hex + self.template['tag_open_after']
 
-        s += template['tag_close']
+            i = 0
+            while i < cpc and len(characters) > 0:
+                next_char = characters.pop()
+                s += next_char
+                i += 1
 
-        if len(characters) < 1:
-            break
+            s += self.template['tag_close']
 
-    return s
+            if len(characters) < 1:
+                break
+
+        return s
 
 
 def parse_config(config_file):
