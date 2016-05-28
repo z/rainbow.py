@@ -1,0 +1,12 @@
+{
+    "html": {
+        "tag_open_before": "<span style=\"color:",
+        "tag_open_after": "\">",
+        "tag_close": "</span>"
+    },
+    "html_single": {
+        "tag_open_before": "<span style='color:",
+        "tag_open_after": "'>",
+        "tag_close": "</span>"
+    }
+}
