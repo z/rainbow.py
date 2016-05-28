@@ -19,21 +19,23 @@ Make sure you're in the venv with `source activate`.
 
 ##### A basic rainbow
 
-```
+```sh
 python rainbow.py "testing my custom rainbow"
 ```
 
 ##### A rainbow with different start and end colors
 
-```
+```sh
 python rainbow.py "rainbow with a different start and end color" --start_color pink --end_color green
 ```
 
 ##### A rainbow with only 3 colors
 
-```
+```sh
 python rainbow.py "rainbow that only uses three colors" -c 3
 ```
+
+##### All Options
 
 ```
 usage: rainbow.py [-h] [--colors [COLORS]] [--start_color [START_COLOR]]
@@ -61,7 +63,7 @@ optional arguments:
 
 Default contents for `config.ini` look similar to below:
 
-```
+```ini
 [default]
 
 color_count  = 12
@@ -73,7 +75,7 @@ formats_file = formats.json
 
 Formats are defined in `formats.json` and look similar to below:
 
-```
+```json
 {
     "html": {
         "tag_open_before": "<span style=\"color:",
