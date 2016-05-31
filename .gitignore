@@ -3,3 +3,4 @@ formats.json
 *.sw[op]
 activate
 venv
+.idea
