@@ -4,3 +4,5 @@ formats.json
 activate
 venv
 .idea
+__pycache__
+big.pyc*

@@ -27,20 +27,25 @@ def main():
 class Rainbow(object):
     """A rainbow object that can be applied to a string"""
 
-    def __init__(self, color_count, start_color, end_color, output_format):
+    def __init__(self, color_count=None, start_color=None, end_color=None, output_format=None):
 
         conf = parse_config('config.ini')
 
         self.color_count = int(conf['color_count'])
         self.start_color = conf['start_color']
+        self.current_color = conf['start_color']
+        self.index = None
         self.end_color = conf['end_color']
         self.output_format = conf['format']
+        self.rainbow = []
+        self.cpc = 1
 
         if color_count:
             self.color_count = int(color_count)
 
         if start_color:
             self.start_color = start_color
+            self.current_color = start_color
 
         if end_color:
             self.end_color = end_color
@@ -56,6 +61,36 @@ class Rainbow(object):
         else:
             raise RuntimeError('format not found! Are you sure it exists in ' + conf['formats_file'] + '?')
 
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            result = self.rainbow[self.index]
+        except IndexError:
+            raise StopIteration
+
+        self.index += 1
+
+        return result
+
+    def get_rainbow(self, phrase):
+
+        phrase_length = len(phrase)
+
+        # chars per color
+        cpc = ceil(phrase_length / self.color_count)
+
+        color_start = Color(self.start_color)
+        color_end = Color(self.end_color)
+        rainbow = list(color_start.range_to(color_end, self.color_count))
+
+        self.rainbow = rainbow
+        self.cpc = cpc
+        # self.index = next(rainbow)
+        self.index = 0
+
+        return {'rainbow': rainbow, 'cpc': cpc}
 
     def generate(self, phrase):
     
@@ -73,6 +108,7 @@ class Rainbow(object):
 
         s = ''
         for color in rainbow:
+
             s += self.template['tag_open_before'] + color.hex + self.template['tag_open_after']
 
             i = 0
